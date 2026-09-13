@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 21:08:26 IST — "opencode/muse-spark-1.3-contributor-free"
+
+**Goal:** Bookmarklet auto-scroll backfill — one click walks the whole Roobet history.
+
+**Added:**
+- `bookmarklet.js` auto mode (default ON, `AUTO_SCROLL=false` restores legacy): finds the real scroller (inner list or page), scrolls + waits (`SCROLL_DELAY_MS` 1200ms), collects rows incrementally into a deduped map (safe against virtualized DOM), stops after 3 settled rounds or 300-scroll cap, sorts oldest-first, uploads in 1500-bet chunks (server cap 2000), progress pill + per-chunk console log, scrolls back to top. Cause: old code only scraped visible rows, so backfill was manual. Verification: `node --check` + `pnpm lint`/`typecheck` clean (fixed one unused-var warning).
+
+**Files Touched:** `bookmarklet.js`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 17:52:52 IST — "opencode/muse-spark-1.3-contributor-free"
 
 **Goal:** Friend handout — full setup walkthrough PDF with flow diagrams.
