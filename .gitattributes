@@ -1,0 +1,13 @@
+# Normalize line endings to LF on commit, checkout as-is per platform.
+# This keeps the repo working identically on macOS and Windows.
+* text=auto eol=lf
+
+# Windows batch files (if any are added later) need CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary / generated — never touch
+*.png binary
+*.jpg binary
+*.ico binary
+pnpm-lock.yaml text eol=lf
