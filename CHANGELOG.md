@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 17:52:52 IST — "opencode/muse-spark-1.3-contributor-free"
+
+**Goal:** Friend handout — full setup walkthrough PDF with flow diagrams.
+
+**Added:**
+- `Roobet-Tracker-Friend-Guide.pdf` (11 pages, reportlab): cover + milestones, system overview diagram, sites/accounts map, Parts A-G (clone `-b roobet-tracker`, Node/pnpm Mac+Windows, own Supabase project with Direct 5432 URL, 4-var `.env`, migrate+run+login, bookmarklet configure/adapt/install, dashboard tour), weekly-habit rule, troubleshooting table, house rules, final checklist; Figures 1-3 flow diagrams. Cause: friend needs code + laptop run + Roobet sites in one handout. Verification: pypdf 11 pages + all key phrases present; rendered diagram pages visually checked.
+
+**Files Touched:** `Roobet-Tracker-Friend-Guide.pdf`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 05:49:53 IST — "opencode/muse-spark-1.3-contributor-free"
 
 **Goal:** Visual pass at 375/768/1024/1440px + console + Lighthouse; fix all findings.
