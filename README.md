@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Roobet Tracker
 
-## Getting Started
+Private gambling P&L tracker — bookmarklet ingest + monthly ROI dashboard.
+Next.js App Router + PostgreSQL + Prisma 6 + Tailwind v4 + Recharts. Deployed to `private.forevergrateful.ie`.
 
-First, run the development server:
+## Retention answer (short)
+
+Roobet does not publicly state a bet-history retention period. Their Trustpilot replies confirm history exists but give no window, and a 500k-bet player reported struggling to get full history from support. Treat Roobet's page as a **limited rolling window** — click the bookmarklet weekly. Your database is the permanent record.
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+cp .env.example .env
+# edit .env: DATABASE_URL, BOOKMARKLET_API_KEY, BASIC_USER, BASIC_PASS
+
+pnpm install
+pnpm exec prisma migrate dev --name init
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How it works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Bookmarklet** (`bookmarklet.js`) runs on roobet.com history page, scrapes visible rows, POSTs JSON to `/api/ingest` with `x-api-key`.
+2. **Ingest API** validates with Zod, upserts by `externalId` (or creates when no ID).
+3. **Stats API** (`/api/stats?month=YYYY-MM`) returns 24h / 7d / 30d summaries, daily P&L, game ROI, recent bets.
+4. **Dashboard** (`src/app/page.tsx`) renders StatCards, BarCharts, bets table.
+5. **Middleware** (`src/middleware.ts`) Basic-Auth protects everything except `/api/ingest`.
 
-## Learn More
+## Bookmarklet setup
 
-To learn more about Next.js, take a look at the following resources:
+1. Edit `bookmarklet.js`: set `API_URL` + `API_KEY`.
+2. Inspect Roobet history DOM (F12), update `ROW_SELECTOR` + `CELLS`.
+3. Minify, prefix `javascript:`, save as bookmark "Import Roobet Bets".
+4. Click weekly on the history page.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Push to GitHub, import in Vercel.
+2. Env vars: `DATABASE_URL` (Neon/Supabase), `BOOKMARKLET_API_KEY`, `BASIC_USER`, `BASIC_PASS`.
+3. Domains → add `private.forevergrateful.ie`.
+4. DNS: CNAME `private` → `cname.vercel-dns.com`.
+5. `npx prisma migrate deploy` against prod DB (via `DATABASE_URL`).
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `pnpm dev` — dev server
+- `pnpm typecheck` — `tsc --noEmit` (primary verification, never run `pnpm build` on 8GB machine)
+- `pnpm lint` — eslint, must be zero errors

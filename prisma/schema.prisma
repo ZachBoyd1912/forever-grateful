@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Bet {
+  id         String   @id @default(cuid())
+  externalId String?  @unique
+  timestamp  DateTime
+  gameType   String
+  gameName   String?
+  stake      Decimal  @db.Decimal(20, 8)
+  payout     Decimal  @db.Decimal(20, 8)
+  currency   String   @default("USD")
+  multiplier Decimal? @db.Decimal(20, 8)
+  status     String   @default("settled")
+  rawData    Json?
+  notes      String?
+  tags       String[] @default([])
+  sessionId  String?
+  session    Session? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([gameType])
+  @@index([sessionId])
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  startTime DateTime
+  endTime   DateTime?
+  bets      Bet[]
+  notes     String?
+}
+
+model BankrollSnapshot {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  balance   Decimal  @db.Decimal(20, 8)
+  currency  String   @default("USD")
+}
