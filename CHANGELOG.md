@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 04:44:00 IST — "muse-spark-1.3-contributor-free"
+
+**Goal:** First successful deploy to Cloudflare Workers.
+
+**Changed:**
+- CI run `34736267452` (re-run): **Typecheck + Lint ✅, Build + Deploy ✅** — live at `https://roobet-tracker.zboyd712.workers.dev`. Unblocked by the `CF_API_TOKEN`/`CF_ACCOUNT_ID` secret remap + fresh token. `/api/stats` currently returns `Auth not configured` (expected — worker secrets not set yet).
+
+**Files Touched:** none (CI re-run of `ece0bcc`) — remaining work is secrets + domain, see blockers list.
+
 ## 13/09/2026 @ 04:40:00 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** Fix OpenNext esbuild failure `Could not resolve "pg-cloudflare"` (second attempt; installing the package wasn't enough).
