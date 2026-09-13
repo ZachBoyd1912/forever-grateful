@@ -1,22 +1,25 @@
 'use client'
 // FULL REBUILD — sourced UI only, no hand-built design.
 // ── design-critique audit (must-fix → fixed) ──────────────────────
-// - No shell/hierarchy → 21st.dev shell: sticky topbar + tablist + bento.
+// - No shell/hierarchy → 21st.dev MCP shell [14941]: sidebar + breadcrumb
+//   header + bento (replaces topbar-only shell).
 // - "Loading…" blank → shadcn SkeletonTable/SkeletonCards.
 // - Raw month input → labeled InputGroup-style control w/ focus ring.
 // - Low-contrast zinc-500 + color-only P&L → 4.5:1 tokens + dot+text badges.
-// - Table w/o caption/scope → shadcn Table composition + caption + scope.
+// - Table w/o caption/scope → 21st MCP Data Table [1050] primitives +
+//   caption + scope + sortable headers (headless sort stays ours).
 // ── sources ───────────────────────────────────────────────────────
-// - Shell: 21st.dev “React Dashboard Components” blog (shell + metric
-//   cards + 1–2 charts + table) + “Dashboard Sidebar” shell header
-//   pattern (breadcrumb bar + toggle + search slot) + shadcn SidebarInset
-//   header (flex h-16 items-center gap-2 px-4).
+// - Shell: 21st.dev MCP get_component [14941] Dashboard Sidebar by
+//   arunjdass (collapsible nav, WorkspaceSwitcher, breadcrumb bar w/
+//   toggle, grid-rows expand) — adapted to inline SVG (no lucide-react
+//   dep) + Roobet anchors + OLED tokens.
 // - Cards: shadcn Card composition + Tailwind Basic Card dark: pattern +
 //   21st “Animated Dashboard Card” hover + “Statistics Card” grid.
 // - Charts: shadcn Complete BarChart with Legend (CartesianGrid
 //   vertical={false}, XAxis tickLine false/tickMargin 10/axisLine false,
 //   Bar radius 4, var(--color-*) fill) on recharts only (21st one-lib rule).
-// - Table: shadcn “Render a basic Table in React JSX” composition.
+// - Table: shadcn Table + 21st MCP [1050] Data Table by shadcn
+//   (TableFooter + ArrowUpDown sort demo → SortButton, no TanStack dep).
 // - Badges: shadcn “Customize Badge Colors” dark: pattern.
 // - Loading/Empty: shadcn SkeletonTable + EmptyMuted composition.
 // - Tokens/type: ui-ux-pro-max Dark OLED (#3B82F6/#60A5FA/#F97316,
@@ -49,10 +52,13 @@ import {
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
+  SortButton,
 } from '@/components/ui/table'
+import { SidebarNav, IconPanel } from '@/components/ui/sidebar-nav'
 import { ChartContainer, chartTooltipStyle, type ChartConfig } from '@/components/ui/chart'
 import {
   Empty,
@@ -282,10 +288,28 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null)
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7))
   const [activeTab, setActiveTab] = useState<string>('overview')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [workspace, setWorkspace] = useState('Private Tracker')
+  const [sortKey, setSortKey] = useState<'time' | 'stake' | 'payout' | 'net'>('time')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
   function handleMonthChange(value: string) {
     setError(null)
     setMonth(value)
+  }
+
+  function handleNavSelect(id: string) {
+    setActiveTab(id)
+    setSidebarOpen(false)
+  }
+
+  function toggleSort(key: 'time' | 'stake' | 'payout' | 'net') {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortKey(key)
+      setSortDir('desc')
+    }
   }
 
   useEffect(() => {
@@ -308,17 +332,64 @@ export default function Dashboard() {
 
   const headline = data?.last30d ?? null
   const headlineUp = (headline?.net ?? 0) >= 0
+  const betCount = data?.allBets.length ?? 0
+  const sortedBets: BetView[] = (data?.allBets ?? []).slice().sort((a, b) => {
+    const mul = sortDir === 'asc' ? 1 : -1
+    if (sortKey === 'time') return (new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) * mul
+    return (a[sortKey] - b[sortKey]) * mul
+  })
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* ── 21st shell header (Dashboard Sidebar + SidebarInset pattern) ── */}
+    <div className="min-h-screen bg-background text-foreground lg:flex">
+      {/* ── 21st MCP [14941] sidebar rail (desktop) + drawer (mobile) ── */}
+      <div className="hidden shrink-0 lg:block">
+        <div className="sticky top-0 h-screen">
+          <SidebarNav
+            activeId={activeTab}
+            onSelect={handleNavSelect}
+            betCount={betCount}
+            workspace={workspace}
+            onWorkspaceSelect={setWorkspace}
+          />
+        </div>
+      </div>
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close navigation"
+            className="absolute inset-0 cursor-default bg-black/60"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div className="absolute top-0 left-0 h-full bg-background shadow-2xl">
+            <SidebarNav
+              activeId={activeTab}
+              onSelect={handleNavSelect}
+              betCount={betCount}
+              workspace={workspace}
+              onWorkspaceSelect={setWorkspace}
+            />
+          </div>
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+      {/* ── 21st MCP [14941] breadcrumb header (toggle + workspace/title) ── */}
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((v) => !v)}
+            aria-expanded={sidebarOpen}
+            aria-label="Toggle navigation"
+            className="flex size-11 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors duration-200 hover:bg-white/[0.06] hover:text-foreground lg:hidden"
+          >
+            <IconPanel open={sidebarOpen} className="size-[18px]" />
+          </button>
           <a href="#overview" className="flex min-h-11 min-w-11 cursor-pointer items-center gap-2.5 rounded-lg">
             <LogoMark />
             <span className="leading-tight">
               <span className="block text-[15px] font-semibold tracking-tight">Roobet Tracker</span>
-              <span className="block text-[11px] text-muted-foreground">Private P&L dashboard</span>
+              <span className="block text-[11px] text-muted-foreground">{workspace} · Private P&amp;L</span>
             </span>
           </a>
           <div className="ml-auto flex items-center gap-2">
@@ -600,7 +671,7 @@ export default function Dashboard() {
                   </CardFooter>
                 </Card>
 
-                <Card>
+                <Card id="import" className="scroll-mt-32">
                   <CardHeader>
                     <CardTitle>How to import</CardTitle>
                     <CardDescription>Bookmarklet → history page → auto-ingest</CardDescription>
@@ -616,7 +687,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <Card>
+            <Card id="roi" className="scroll-mt-32">
               <CardHeader>
                 <CardTitle>ROI by game type · 30 days</CardTitle>
                 <CardDescription>Green holds, red bleeds — size bets accordingly.</CardDescription>
@@ -658,13 +729,13 @@ export default function Dashboard() {
             <Card id="recent" className="scroll-mt-32">
               <CardHeader>
                 <CardTitle>Recent bets</CardTitle>
-                <CardDescription>Newest first · showing up to 50</CardDescription>
+                <CardDescription>Sortable · showing up to 50</CardDescription>
                 <CardAction>
                   <Badge variant="secondary">{data.allBets.length} total</Badge>
                 </CardAction>
               </CardHeader>
               <CardContent>
-                {data.allBets.length === 0 ? (
+                {sortedBets.length === 0 ? (
                   <Empty className="bg-muted/30">
                     <EmptyHeader>
                       <EmptyMedia>
@@ -691,19 +762,27 @@ export default function Dashboard() {
                   <div className="overflow-x-auto">
                     <Table>
                       <TableCaption>
-                        Showing {Math.min(50, data.allBets.length)} of {data.allBets.length} bets.
+                        Showing {Math.min(50, sortedBets.length)} of {sortedBets.length} bets.
                       </TableCaption>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Time</TableHead>
+                          <TableHead aria-sort={sortKey === 'time' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                            <SortButton label="Time" active={sortKey === 'time'} direction={sortDir} onToggle={() => toggleSort('time')} />
+                          </TableHead>
                           <TableHead>Game</TableHead>
-                          <TableHead className="text-right">Stake</TableHead>
-                          <TableHead className="text-right">Payout</TableHead>
-                          <TableHead className="text-right">Net</TableHead>
+                          <TableHead className="text-right" aria-sort={sortKey === 'stake' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                            <SortButton label="Stake" active={sortKey === 'stake'} direction={sortDir} onToggle={() => toggleSort('stake')} />
+                          </TableHead>
+                          <TableHead className="text-right" aria-sort={sortKey === 'payout' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                            <SortButton label="Payout" active={sortKey === 'payout'} direction={sortDir} onToggle={() => toggleSort('payout')} />
+                          </TableHead>
+                          <TableHead className="text-right" aria-sort={sortKey === 'net' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+                            <SortButton label="Net" active={sortKey === 'net'} direction={sortDir} onToggle={() => toggleSort('net')} />
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {data.allBets.slice(0, 50).map((b) => {
+                        {sortedBets.slice(0, 50).map((b) => {
                           const up = b.net >= 0
                           return (
                             <TableRow key={b.id}>
@@ -735,11 +814,27 @@ export default function Dashboard() {
                           )
                         })}
                       </TableBody>
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell colSpan={2} className="text-muted-foreground">
+                            Total ({Math.min(50, sortedBets.length)} shown)
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">
+                            {sortedBets.slice(0, 50).reduce((s, b) => s + b.stake, 0).toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">
+                            {sortedBets.slice(0, 50).reduce((s, b) => s + b.payout, 0).toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono font-semibold tabular-nums">
+                            {formatMoney(sortedBets.slice(0, 50).reduce((s, b) => s + b.net, 0))}
+                          </TableCell>
+                        </TableRow>
+                      </TableFooter>
                     </Table>
                   </div>
                 )}
               </CardContent>
-              {data.allBets.length > 0 ? (
+              {sortedBets.length > 0 ? (
                 <CardFooter>
                   <p className="text-xs text-muted-foreground">
                     Amounts in original currency · {month} filter applies to the monthly card only.
@@ -750,11 +845,12 @@ export default function Dashboard() {
 
             <footer className="flex flex-wrap items-center justify-between gap-2 px-1 pt-2 text-xs text-muted-foreground">
               <p>Roobet Tracker · private dashboard · data never leaves your database.</p>
-              <p className="font-mono">UI: shadcn + Tailwind + 21st.dev patterns · OLED dark</p>
+              <p className="font-mono">UI: shadcn + Tailwind + 21st.dev MCP 14941/1050 · OLED dark</p>
             </footer>
           </div>
         )}
       </main>
+      </div>
     </div>
   )
 }

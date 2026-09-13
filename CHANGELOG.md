@@ -1,5 +1,23 @@
 # Changelog
 
+## 13/09/2026 @ 05:35:54 IST — "opencode/muse-spark-1.3-contributor-free"
+
+**Goal:** Config 21st.dev MCP (fix auth headers) + rescan entire site via MCP + adapt top-2 components with zero new deps.
+
+**Fixed:**
+- `~/.config/opencode/opencode.jsonc`: `21st-dev-mcp` used `environment.X_API_KEY` (remote MCP ignores it) → `headers.x-api-key` + `oauth:false`. Cause: opencode remote MCP requires `headers`, not `environment`; tools never loaded. Fix verified via MCP `initialize` 200 (21st v0.1.1) + `tools/list` 34 tools + `get_usage` free 2/2. Verification: curl MCP POST clean.
+- `src/components/ui/table.tsx` lint warning `aria-sort on button` → moved `aria-sort` to `TableHead` (columnheader), `SortButton` uses `aria-label` only. Cause: jsx-a11y role-supports-aria-props. Verification: `pnpm lint` clean.
+
+**Added:**
+- `src/components/ui/sidebar-nav.tsx` (new): adapted from 21st MCP `get_component [14941] Dashboard Sidebar` by arunjdass (WorkspaceSwitcher, collapsible NavItem w/ grid-rows animation, breadcrumb header pattern). Adapted to inline SVG icons (no lucide-react dep), Roobet anchors (#overview/#month/#games/#recent/#roi/#import), button+aria-expanded/aria-current, OLED tokens. Cause: prior shell was topbar-only, no sidebar rail. Verification: typecheck/lint clean.
+- `src/app/page.tsx`: sidebar rail (desktop sticky) + drawer (mobile toggle w/ IconPanel) + workspace in subtitle, sortable Recent bets (time/stake/payout/net via SortButton, aria-sort on th), TableFooter totals, new anchors `#roi`/`#import`. Cause: 21st rescan gaps (shell + table). Verification: typecheck/lint clean; visual QA still needs `pnpm dev` 375/768/1024/1440px.
+- 21st MCP rescan (all via `tools/call search`, free): shell→14941/19070/19009, metric→26138/4245/7461, bento→9758/25311/9658, chart→3090/2366/10123, table→89/1050/4794, theme→none (kept OLED). Quota spent 2/2 retrieving 14941+1050; AI generation disabled so manual adapt. Verification: `/tmp/21st_rescan/*.json` saved.
+
+**Changed:**
+- `src/components/ui/table.tsx`: added `TableFooter` (1050 canonical) + `SortButton` (ArrowUpDown demo pattern, no TanStack dep to keep bundle lean for 50 rows). Cause: align to 21st [1050] without new deps. Verification: typecheck/lint clean.
+
+**Files Touched:** `src/components/ui/sidebar-nav.tsx`, `src/app/page.tsx`, `src/components/ui/table.tsx`, `CHANGELOG.md` (+ `~/.config/opencode/opencode.jsonc` outside repo)
+
 ## 13/09/2026 @ 05:15:57 IST — "opencode/muse-spark-1.3-contributor-free"
 
 **Goal:** Rebuild dashboard UI top-to-bottom from sourced patterns only (design-critique + ui-ux-pro-max + Context7 shadcn/Tailwind + 21st.dev; VGPU honestly excluded).
