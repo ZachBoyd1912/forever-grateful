@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 04:33:00 IST — "muse-spark-1.3-contributor-free"
+
+**Goal:** Point CI at the repo's existing Cloudflare secret names.
+
+**Changed:**
+- `.github/workflows/deploy-cloudflare.yml`: `secrets.CLOUDFLARE_API_TOKEN` → `secrets.CF_API_TOKEN`, `secrets.CLOUDFLARE_ACCOUNT_ID` → `secrets.CF_ACCOUNT_ID` (env names exposed to wrangler unchanged). Cause: repo secrets already exist as `CF_*`; workflow referenced names that evaluated `null`. Verification: lint clean; pushed, CI re-runs automatically.
+
+**Files Touched:** `.github/workflows/deploy-cloudflare.yml`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 04:31:00 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** Fix CI deploy step failing with `ERR_PNPM_NOTHING_TO_DEPLOY`.
