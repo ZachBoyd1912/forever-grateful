@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 04:31:00 IST — "muse-spark-1.3-contributor-free"
+
+**Goal:** Fix CI deploy step failing with `ERR_PNPM_NOTHING_TO_DEPLOY`.
+
+**Fixed:**
+- `.github/workflows/deploy-cloudflare.yml`: `pnpm deploy` → `pnpm run deploy`. Cause: bare `pnpm deploy` invokes pnpm's builtin package-deploy command instead of the `deploy` script in `package.json`, so nothing ran (exit 1). Verification: lint clean; CI re-runs on push. Note: deploy will still fail until the `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` repo secrets are added (both evaluated `null` in run `34735574175`) — that's a manual step.
+
+**Files Touched:** `.github/workflows/deploy-cloudflare.yml`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 04:28:18 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** Fix CI verify failure so the Cloudflare deploy pipeline goes green.
