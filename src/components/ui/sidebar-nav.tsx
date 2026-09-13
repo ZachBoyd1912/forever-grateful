@@ -194,7 +194,9 @@ function WorkspaceSwitcher({
         className="mb-4 flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 transition-colors select-none hover:bg-white/[0.05]"
       >
         <span className="flex items-center gap-3">
-          <span className="flex size-8 items-center justify-center rounded-md bg-primary text-[13px] font-semibold text-primary-foreground shadow-sm">
+          {/* Lighthouse color-contrast: blue-600/white ≈ 5.2:1 (AA),
+              vs bg-primary/white ≈ 3.7:1. Same blue family, keeps 21st shape. */}
+          <span className="flex size-8 items-center justify-center rounded-md bg-[#2563eb] text-[13px] font-semibold text-white shadow-sm">
             {selected.charAt(0)}
           </span>
           <span className="flex flex-col overflow-hidden text-left">
@@ -352,7 +354,9 @@ export function SidebarNav({
         {groups.map((group, idx) => (
           <div key={idx} className="flex flex-col gap-0.5">
             {group.heading && (
-              <span className="mb-1 px-2.5 text-[11px] font-semibold tracking-wider text-muted-foreground/50 uppercase">
+              // Lighthouse color-contrast audit: headings keep full
+              // text-muted-foreground (#a1a1aa ≈ 7:1 on OLED), never /50.
+              <span className="mb-1 px-2.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                 {group.heading}
               </span>
             )}

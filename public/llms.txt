@@ -1,0 +1,17 @@
+# Roobet Tracker
+
+> Private gambling P&L tracker — bookmarklet ingest + monthly ROI dashboard. Single-user, Basic Auth protected.
+
+## Pages
+
+- [Dashboard `/`](/#overview): 30-day headline, rolling 24h/7d/30d metric cards, monthly trend chart, top games, ROI by game chart, sortable recent-bets table.
+- [Month `/#month`](/#month): daily net P&L, ROI, best/worst bets for the selected month.
+- [Games `/#games`](/#games): top games by bet count plus ROI-by-game chart at [`/#roi`](/#roi).
+- [Recent bets `/#recent`](/#recent): sortable table with totals footer; import help at [`/#import`](/#import).
+- `/api/stats?month=YYYY-MM`: JSON dashboard aggregates (auth required).
+- `/api/ingest`: bookmarklet bet import endpoint (API-key required).
+
+## Notes
+
+- Dark OLED UI built from shadcn + Tailwind + 21st.dev MCP components (sidebar shell 14941, data table 1050).
+- Data never leaves the owner's database (Supabase Postgres via Prisma).

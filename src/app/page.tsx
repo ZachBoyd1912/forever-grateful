@@ -330,6 +330,17 @@ export default function Dashboard() {
     }
   }, [month])
 
+  // Visual-pass fix: Escape closes the mobile nav drawer (backdrop click
+  // already did; keyboard users had no way out). No-op on desktop.
+  useEffect(() => {
+    if (!sidebarOpen) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setSidebarOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [sidebarOpen])
+
   const headline = data?.last30d ?? null
   const headlineUp = (headline?.net ?? 0) >= 0
   const betCount = data?.allBets.length ?? 0
@@ -407,9 +418,11 @@ export default function Dashboard() {
               onChange={(e) => handleMonthChange(e.target.value)}
               className="h-11 cursor-pointer rounded-lg border border-border bg-card px-3 text-sm text-foreground transition-colors duration-200 hover:border-foreground/25"
             />
+            {/* Lighthouse color-contrast audit: white on blue-600 (#2563eb)
+                ≈ 5.2:1 AA-pass; white on primary #3B82F6 ≈ 3.7:1 fails. */}
             <a
               href="#recent"
-              className="hidden h-11 cursor-pointer items-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-[#2f6fed] sm:inline-flex"
+              className="hidden h-11 cursor-pointer items-center rounded-lg bg-[#2563eb] px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#1d4ed8] sm:inline-flex"
             >
               Import bets
             </a>

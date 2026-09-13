@@ -1,5 +1,20 @@
 # Changelog
 
+## 13/09/2026 @ 05:49:53 IST — "opencode/muse-spark-1.3-contributor-free"
+
+**Goal:** Visual pass at 375/768/1024/1440px + console + Lighthouse; fix all findings.
+
+**Fixed:**
+- Sidebar group headings `text-muted-foreground/50` → solid `text-muted-foreground`. Cause: Lighthouse `color-contrast` fail (2 nodes). Verification: re-audit Accessibility 97→100.
+- Import CTA `bg-primary/white` (≈3.7:1) → `bg-[#2563eb] hover:bg-[#1d4ed8]` white text (≈5.2:1); workspace avatar same swap. Cause: Lighthouse `color-contrast` fail on header CTA. Same blue family, 21st shape kept. Verification: re-audit 0 contrast failures.
+- Mobile drawer ignored Escape → added `keydown` closer (active only when open) with focus already on toggle. Cause: manual keyboard test (backdrop click worked, Escape didn't). Verification: open drawer → Escape → drawer gone from a11y tree, focus back on toggle.
+- `llms.txt` had no links → rewrote Pages section with markdown links to `/#overview|month|games|roi|recent|import`. Cause: Lighthouse `llms-txt` fail ("no links"). Verification: re-audit Agentic 50→100.
+- Console `label for` issue investigated: both labels (`month-top`, `month`) resolve to real inputs with correct accessible names (verified via DOM query + snapshot) — Chromium false positive on `type=month` shadow DOM. No change.
+
+**Verified (no changes):** 375 (toggle+drawer+tablist OK), 768 (drawer overlays, Import visible ≥640 OK), 1024/1440 (desktop rail + hero + cards + bento OK); `pnpm typecheck` + `pnpm lint` clean; final Lighthouse 38/38 — A11y 100, Best Practices 100, SEO 100, Agentic 100. Zero-state (0 bets) renders correctly; populated-state sort/TableFooter logic unchanged. Dev-only notes: floating "N" in screenshots is the Next.js DevTools button, not app UI; visual pass used auth-bypassed local dev (empty BASIC_USER/PASS, dev-only, no code change).
+
+**Files Touched:** `src/app/page.tsx`, `src/components/ui/sidebar-nav.tsx`, `src/middleware.ts`, `public/llms.txt`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 05:35:54 IST — "opencode/muse-spark-1.3-contributor-free"
 
 **Goal:** Config 21st.dev MCP (fix auth headers) + rescan entire site via MCP + adapt top-2 components with zero new deps.
