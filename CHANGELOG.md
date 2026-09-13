@@ -1,5 +1,19 @@
 # Changelog
 
+## 13/09/2026 @ 05:15:57 IST — "opencode/muse-spark-1.3-contributor-free"
+
+**Goal:** Rebuild dashboard UI top-to-bottom from sourced patterns only (design-critique + ui-ux-pro-max + Context7 shadcn/Tailwind + 21st.dev; VGPU honestly excluded).
+
+**Added:**
+- Sourced component library under `src/components/ui/`: `card.tsx` (shadcn Card composition), `badge.tsx` (shadcn Badge custom dark colors + dot+text P&L badge), `table.tsx` (shadcn Table composition with caption/scope), `feedback.tsx` (shadcn SkeletonTable + EmptyMuted), `chart.tsx` (shadcn ChartContainer/chartConfig + BarChart-with-Legend pattern on recharts only). Cause: prior UI was hand-built zinc divs with no tokens. Verification: `pnpm typecheck` + `pnpm lint` clean.
+- Full dashboard shell: sticky 21st-style topbar (logo, live badge, month picker, Import CTA) + shadcn Tabs tablist (Overview/Month/Games/Recent) + 30-day headline hero + metric-card grid + Analytics-Bento month/games split + ROI chart + Recent-bets table + footer. Cause: design-critique must-fix (no hierarchy, blank loading, raw input, color-only P&L, caption-less table). Verification: typecheck/lint clean; visual QA still needs `pnpm dev` + 375/768/1024/1440px pass.
+
+**Changed:**
+- `globals.css`: OLED dark tokens (Primary #3B82F6 / Secondary #60A5FA / CTA #F97316), sidebar tokens, radial-gradient wash, focus-visible ring, reduced-motion guard, thin scrollbars. `layout.tsx`: Fira Sans + Fira Code via next/font, `dark` class, viewport/themeColor. Cause: ui-ux-pro-max design-system output for fintech dark analytics. Verification: typecheck/lint clean.
+- Honesty notes: VGPU corpus contains only WebGPU infra (`/guides`, `/vgpu/*`) — zero dashboard UI found, so no UI sourced from VGPU. 21st.dev has no MCP server in this env (only agentmemory/chrome-devtools/cloudflare/context7/instagram/supabase/vgpu); 21st patterns pulled via web docs (dashboard-parts blog + shell/cards/bento writeups) instead of MCP.
+
+**Files Touched:** `src/app/page.tsx`, `src/app/layout.tsx`, `src/app/globals.css`, `src/components/ui/card.tsx`, `src/components/ui/badge.tsx`, `src/components/ui/table.tsx`, `src/components/ui/feedback.tsx`, `src/components/ui/chart.tsx`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 04:50:00 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** Record end-to-end proof of the live deployment.
