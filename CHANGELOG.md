@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 04:36:00 IST — "muse-spark-1.3-contributor-free"
+
+**Goal:** Fix OpenNext bundling failure on `pg`.
+
+**Fixed:**
+- Added `pg-cloudflare@1.4.0` dependency. Cause: CI deploy failed in esbuild with `Could not resolve "pg-cloudflare"` from `pg/lib/stream.js` — `pg@8.23` requires that package for Workers runtimes and it wasn't installed. Verification: typecheck + lint clean; real proof is the CI OpenNext build (pushed, watching).
+
+**Files Touched:** `package.json`, `pnpm-lock.yaml`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 04:33:00 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** Point CI at the repo's existing Cloudflare secret names.
