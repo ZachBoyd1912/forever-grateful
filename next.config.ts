@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Required for Prisma on Cloudflare Workers — lets OpenNext patch + bundle the client.
+  serverExternalPackages: ["@prisma/client", ".prisma/client"],
   async headers() {
     return [
       {

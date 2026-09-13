@@ -1,0 +1,8 @@
+# Local Workers preview vars (wrangler dev / opennext preview reads .dev.vars).
+# Copy to .dev.vars (gitignored, never commit) and fill in:
+#   cp .dev.vars.example .dev.vars
+# Production secrets are set via `wrangler secret put <NAME>` — never in this file.
+DATABASE_URL="postgresql://user:pass@host:6543/roobet_tracker?pgbouncer=true&schema=public"
+BOOKMARKLET_API_KEY="generate-a-long-random-string"
+BASIC_USER="youruser"
+BASIC_PASS="a-strong-password"

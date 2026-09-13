@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getDb } from '@/lib/prisma'
 import { subHours, subDays, startOfMonth, endOfMonth } from 'date-fns'
 
 type BetRow = {
@@ -66,6 +66,7 @@ function serializeBet(b: BetRow) {
 }
 
 export async function GET(req: NextRequest) {
+  const prisma = getDb()
   const { searchParams } = new URL(req.url)
   const monthParam = searchParams.get('month') // "2026-09"
 

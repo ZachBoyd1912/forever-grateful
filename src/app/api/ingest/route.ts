@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getDb } from '@/lib/prisma'
 import { z } from 'zod'
 
 const CORS_HEADERS: Record<string, string> = {
@@ -35,6 +35,7 @@ function withCors(res: NextResponse) {
 }
 
 export async function POST(req: NextRequest) {
+  const prisma = getDb()
   const apiKey = req.headers.get('x-api-key')
   if (!process.env.BOOKMARKLET_API_KEY || apiKey !== process.env.BOOKMARKLET_API_KEY) {
     return withCors(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))

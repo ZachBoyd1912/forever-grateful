@@ -11,7 +11,7 @@
  *     Roobet states no public bet-history retention period.
  */
 (function () {
-  var API_URL = 'https://www.private.forevergrateful.ie/api/ingest';
+  var API_URL = 'https://private.forevergrateful.ie/api/ingest';
   var API_KEY = 'PASTE_YOUR_BOOKMARKLET_API_KEY_HERE';
 
   // ---- ADAPT THESE SELECTORS TO ROOBET'S CURRENT DOM ----
