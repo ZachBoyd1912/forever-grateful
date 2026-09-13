@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 04:40:00 IST — "muse-spark-1.3-contributor-free"
+
+**Goal:** Fix OpenNext esbuild failure `Could not resolve "pg-cloudflare"` (second attempt; installing the package wasn't enough).
+
+**Fixed:**
+- `next.config.ts`: added `pg` + `pg-cloudflare` to `serverExternalPackages`. Cause: `pg/lib/stream.js` lazily `require('pg-cloudflare')`s for Workers sockets; OpenNext's static bundling can't resolve it in the pruned `.open-next` tree even when installed (verified package files exist locally — pure tracing gap). Externals are traced as runtime requires instead. Verification: typecheck + lint clean; real proof is the CI OpenNext build.
+
+**Files Touched:** `next.config.ts`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 04:36:00 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** Fix OpenNext bundling failure on `pg`.

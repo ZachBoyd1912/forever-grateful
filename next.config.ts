@@ -2,7 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Required for Prisma on Cloudflare Workers — lets OpenNext patch + bundle the client.
-  serverExternalPackages: ["@prisma/client", ".prisma/client"],
+  // pg + pg-cloudflare are external so their runtime requires (pg lazily
+  // requires pg-cloudflare for Workers sockets) are traced as externals
+  // instead of failing OpenNext's static esbuild bundling.
+  serverExternalPackages: ["@prisma/client", ".prisma/client", "pg", "pg-cloudflare"],
   async headers() {
     return [
       {
