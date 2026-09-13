@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description: "Private gambling P&L tracker — bookmarklet ingest + monthly ROI dashboard",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html
       lang="en"

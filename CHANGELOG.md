@@ -1,5 +1,15 @@
 # Changelog
 
+## 13/09/2026 @ 04:28:18 IST — "muse-spark-1.3-contributor-free"
+
+**Goal:** Fix CI verify failure so the Cloudflare deploy pipeline goes green.
+
+**Fixed:**
+- `src/app/layout.tsx`: replaced Next-generated `LayoutProps<"/">` with plain `{ children: React.ReactNode }`. Cause: first CI run failed with `TS2304: Cannot find name 'LayoutProps'` — that type only exists after a local `.next/` typegen, which a fresh CI runner never has. Fix removes the dependency entirely. Verification: `pnpm typecheck` clean.
+- `.github/workflows/deploy-cloudflare.yml`: added `pnpm exec prisma generate` before typecheck in the verify job. Cause: CI failed with `Module '"@prisma/client"' has no exported member 'PrismaClient'` — fresh installs don't run Prisma's codegen (build scripts are skipped). Verification: typecheck + lint clean locally; CI re-runs on push.
+
+**Files Touched:** `src/app/layout.tsx`, `.github/workflows/deploy-cloudflare.yml`, `CHANGELOG.md`
+
 ## 13/09/2026 @ 04:23:33 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** Host the tracker on Cloudflare Workers (not Vercel) under `private.forevergrateful.ie`, keeping all other domains untouched.
