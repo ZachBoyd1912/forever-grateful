@@ -1,5 +1,14 @@
 # Changelog
 
+## 13/09/2026 @ 04:50:00 IST — "muse-spark-1.3-contributor-free"
+
+**Goal:** Record end-to-end proof of the live deployment.
+
+**Changed:**
+- Verified live at `https://roobet-tracker.zboyd712.workers.dev`: Basic Auth challenge works, dashboard renders, `/api/stats` returns clean zero-state (no bets). This proves the full chain — Workers runtime + per-request `PrismaPg` client + Supabase pooled `6543` connection all work in production. Worker secrets (`DATABASE_URL`, `BOOKMARKLET_API_KEY`, `BASIC_USER`, `BASIC_PASS`) confirmed live. Remaining: custom domain attach + bookmarklet first import (user-side).
+
+**Files Touched:** `CHANGELOG.md`
+
 ## 13/09/2026 @ 04:44:00 IST — "muse-spark-1.3-contributor-free"
 
 **Goal:** First successful deploy to Cloudflare Workers.
